@@ -1,0 +1,132 @@
+[
+    {
+        "id": 1,
+        "skill": "Python",
+        "question": "Which keyword is used to define a function in Python?",
+        "options": {
+            "A": "function",
+            "B": "def",
+            "C": "func",
+            "D": "define"
+        },
+        "answer": "B",
+        "difficulty": "easy"
+    },
+    {
+        "id": 2,
+        "skill": "Python",
+        "question": "What is the output type of len([1, 2, 3])?",
+        "options": {
+            "A": "list",
+            "B": "float",
+            "C": "integer",
+            "D": "string"
+        },
+        "answer": "C",
+        "difficulty": "easy"
+    },
+    {
+        "id": 3,
+        "skill": "SQL",
+        "question": "Which SQL clause is used to filter rows?",
+        "options": {
+            "A": "WHERE",
+            "B": "GROUP BY",
+            "C": "ORDER BY",
+            "D": "HAVING"
+        },
+        "answer": "A",
+        "difficulty": "easy"
+    },
+    {
+        "id": 4,
+        "skill": "SQL",
+        "question": "Which keyword is used to remove duplicate rows?",
+        "options": {
+            "A": "UNIQUE",
+            "B": "DISTINCT",
+            "C": "REMOVE",
+            "D": "FILTER"
+        },
+        "answer": "B",
+        "difficulty": "medium"
+    },
+    {
+        "id": 5,
+        "skill": "DSA",
+        "question": "Which data structure follows FIFO?",
+        "options": {
+            "A": "Stack",
+            "B": "Queue",
+            "C": "Tree",
+            "D": "Graph"
+        },
+        "answer": "B",
+        "difficulty": "easy"
+    },
+    {
+        "id": 6,
+        "skill": "DSA",
+        "question": "What is the average time complexity of binary search?",
+        "options": {
+            "A": "O(n)",
+            "B": "O(n²)",
+            "C": "O(log n)",
+            "D": "O(1)"
+        },
+        "answer": "C",
+        "difficulty": "medium"
+    },
+    {
+        "id": 7,
+        "skill": "Backend",
+        "question": "Which HTTP status code means 'Not Found'?",
+        "options": {
+            "A": "200",
+            "B": "301",
+            "C": "404",
+            "D": "500"
+        },
+        "answer": "C",
+        "difficulty": "easy"
+    },
+    {
+        "id": 8,
+        "skill": "Backend",
+        "question": "What is the primary purpose of an API?",
+        "options": {
+            "A": "Store images",
+            "B": "Allow communication between software systems",
+            "C": "Compile code",
+            "D": "Design webpages"
+        },
+        "answer": "B",
+        "difficulty": "easy"
+    },
+    {
+        "id": 9,
+        "skill": "System Design",
+        "question": "What is caching mainly used for?",
+        "options": {
+            "A": "Increasing repeated data access speed",
+            "B": "Deleting databases",
+            "C": "Writing frontend code",
+            "D": "Encrypting passwords"
+        },
+        "answer": "A",
+        "difficulty": "medium"
+    },
+    {
+        "id": 10,
+        "skill": "System Design",
+        "question": "What does horizontal scaling generally mean?",
+        "options": {
+            "A": "Adding more resources to one machine",
+            "B": "Adding more machines",
+            "C": "Reducing database size",
+            "D": "Removing servers"
+        },
+        "answer": "B",
+        "difficulty": "medium"
+    }
+]
