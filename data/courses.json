@@ -1,0 +1,98 @@
+[
+    {
+        "id": 1,
+        "name": "Python Programming Fundamentals",
+        "skill": "Python",
+        "level": "Beginner",
+        "duration": "12 hours",
+        "type": "Micro-course"
+    },
+    {
+        "id": 2,
+        "name": "Advanced Python Development",
+        "skill": "Python",
+        "level": "Intermediate",
+        "duration": "20 hours",
+        "type": "Course"
+    },
+    {
+        "id": 3,
+        "name": "SQL for Data Analysis",
+        "skill": "SQL",
+        "level": "Beginner",
+        "duration": "10 hours",
+        "type": "Course"
+    },
+    {
+        "id": 4,
+        "name": "Advanced SQL & Database Optimization",
+        "skill": "SQL",
+        "level": "Intermediate",
+        "duration": "18 hours",
+        "type": "Course"
+    },
+    {
+        "id": 5,
+        "name": "Data Structures & Algorithms",
+        "skill": "DSA",
+        "level": "Beginner",
+        "duration": "25 hours",
+        "type": "Course"
+    },
+    {
+        "id": 6,
+        "name": "DSA Problem Solving Bootcamp",
+        "skill": "DSA",
+        "level": "Intermediate",
+        "duration": "30 hours",
+        "type": "Workshop"
+    },
+    {
+        "id": 7,
+        "name": "Backend Development Fundamentals",
+        "skill": "Backend",
+        "level": "Beginner",
+        "duration": "15 hours",
+        "type": "Course"
+    },
+    {
+        "id": 8,
+        "name": "REST API Development",
+        "skill": "Backend",
+        "level": "Intermediate",
+        "duration": "16 hours",
+        "type": "Hands-on Project"
+    },
+    {
+        "id": 9,
+        "name": "System Design Fundamentals",
+        "skill": "System Design",
+        "level": "Beginner",
+        "duration": "12 hours",
+        "type": "Course"
+    },
+    {
+        "id": 10,
+        "name": "Scalable System Design",
+        "skill": "System Design",
+        "level": "Intermediate",
+        "duration": "20 hours",
+        "type": "Course"
+    },
+    {
+        "id": 11,
+        "name": "Design a URL Shortener",
+        "skill": "System Design",
+        "level": "Intermediate",
+        "duration": "6 hours",
+        "type": "Hands-on Project"
+    },
+    {
+        "id": 12,
+        "name": "Database Scaling & Caching",
+        "skill": "System Design",
+        "level": "Intermediate",
+        "duration": "8 hours",
+        "type": "Workshop"
+    }
+]

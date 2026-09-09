@@ -1,0 +1,102 @@
+[
+    {
+        "id": 1,
+        "title": "Python Developer",
+        "requirements": {
+            "Python": 75,
+            "SQL": 60,
+            "DSA": 55,
+            "Backend": 50,
+            "System Design": 30
+        },
+        "weights": {
+            "Python": 0.35,
+            "SQL": 0.15,
+            "DSA": 0.20,
+            "Backend": 0.20,
+            "System Design": 0.10
+        },
+        "experience": "Fresher",
+        "salary": "₹5-8 LPA"
+    },
+    {
+        "id": 2,
+        "title": "Backend Developer",
+        "requirements": {
+            "Python": 70,
+            "SQL": 75,
+            "DSA": 65,
+            "Backend": 75,
+            "System Design": 60
+        },
+        "weights": {
+            "Python": 0.20,
+            "SQL": 0.15,
+            "DSA": 0.20,
+            "Backend": 0.25,
+            "System Design": 0.20
+        },
+        "experience": "Fresher",
+        "salary": "₹6-10 LPA"
+    },
+    {
+        "id": 3,
+        "title": "Data Analyst",
+        "requirements": {
+            "Python": 60,
+            "SQL": 80,
+            "DSA": 40,
+            "Backend": 20,
+            "System Design": 10
+        },
+        "weights": {
+            "Python": 0.25,
+            "SQL": 0.40,
+            "DSA": 0.10,
+            "Backend": 0.15,
+            "System Design": 0.10
+        },
+        "experience": "Fresher",
+        "salary": "₹4-7 LPA"
+    },
+    {
+        "id": 4,
+        "title": "Software Developer",
+        "requirements": {
+            "Python": 70,
+            "SQL": 60,
+            "DSA": 70,
+            "Backend": 60,
+            "System Design": 50
+        },
+        "weights": {
+            "Python": 0.20,
+            "SQL": 0.15,
+            "DSA": 0.30,
+            "Backend": 0.20,
+            "System Design": 0.15
+        },
+        "experience": "Fresher",
+        "salary": "₹5-9 LPA"
+    },
+    {
+        "id": 5,
+        "title": "Junior Full Stack Developer",
+        "requirements": {
+            "Python": 65,
+            "SQL": 65,
+            "DSA": 55,
+            "Backend": 70,
+            "System Design": 45
+        },
+        "weights": {
+            "Python": 0.20,
+            "SQL": 0.15,
+            "DSA": 0.15,
+            "Backend": 0.35,
+            "System Design": 0.15
+        },
+        "experience": "Fresher",
+        "salary": "₹5-9 LPA"
+    }
+]
