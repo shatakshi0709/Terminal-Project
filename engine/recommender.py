@@ -4,8 +4,21 @@ from engine.scoring import calculate_weighted_score
 
 
 def load_jobs():
+
     with open("data/jobs.json", "r") as file:
         return json.load(file)
+
+
+def get_job_by_title(title):
+
+    jobs = load_jobs()
+
+    for job in jobs:
+
+        if job["title"].lower() == title.lower():
+            return job
+
+    return None
 
 
 def calculate_job_match(skill_scores, job):
@@ -32,10 +45,17 @@ def recommend_jobs(skill_scores):
         )
 
         recommendations.append({
+
             "title": job["title"],
+
             "score": score,
+
             "salary": job["salary"],
+
+            "experience": job["experience"],
+
             "requirements": job["requirements"]
+
         })
 
     recommendations.sort(
@@ -52,11 +72,18 @@ def show_recommendations(recommendations):
     print("              RECOMMENDED CAREER PATHS")
     print("=" * 65)
 
-    for index, job in enumerate(recommendations, start=1):
+    if not recommendations:
 
-        print(
-            f"\n{index}. {job['title']}"
-        )
+        print("\nNo suitable jobs found.")
+
+        return
+
+    for index, job in enumerate(
+        recommendations,
+        start=1
+    ):
+
+        print(f"\n{index}. {job['title']}")
 
         print(
             f"   Compatibility: {job['score']}%"
@@ -66,18 +93,25 @@ def show_recommendations(recommendations):
             f"   Salary Range: {job['salary']}"
         )
 
+        print(
+            f"   Experience: {job['experience']}"
+        )
+
     print("\n" + "=" * 65)
 
 
 # TESTING
+
 if __name__ == "__main__":
 
     skill_scores = {
+
         "Python": 100,
         "SQL": 100,
         "DSA": 50,
         "Backend": 100,
         "System Design": 0
+
     }
 
     recommendations = recommend_jobs(
