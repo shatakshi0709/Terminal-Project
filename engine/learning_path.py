@@ -26,21 +26,30 @@ def recommend_courses(skill_gaps):
         for course in courses:
 
             if course["skill"] == skill:
-                matching_courses.append(course)
 
-        # Sort beginner courses before intermediate courses
+                matching_courses.append(
+                    course
+                )
+
+        # Beginner courses first
         matching_courses.sort(
             key=lambda course:
-            0 if course["level"] == "Beginner" else 1
+            0
+            if course["level"] == "Beginner"
+            else 1
         )
 
         recommendations.append({
+
             "skill": skill,
+
             "gap": gap,
+
             "courses": matching_courses
+
         })
 
-    # Biggest skill gap first
+    # Biggest gap first
     recommendations.sort(
         key=lambda item: item["gap"],
         reverse=True
@@ -49,7 +58,9 @@ def recommend_courses(skill_gaps):
     return recommendations
 
 
-def show_learning_path(recommendations):
+def show_learning_path(
+    recommendations
+):
 
     print("\n" + "=" * 70)
     print("             PERSONALIZED LEARNING PATH")
@@ -57,8 +68,13 @@ def show_learning_path(recommendations):
 
     if not recommendations:
 
-        print("\n🎉 No major skill gaps found!")
-        print("You are ready for your target role.")
+        print(
+            "\n🎉 No major skill gaps found!"
+        )
+
+        print(
+            "You are ready for your target role."
+        )
 
         return
 
@@ -67,19 +83,46 @@ def show_learning_path(recommendations):
     for recommendation in recommendations:
 
         skill = recommendation["skill"]
+
         gap = recommendation["gap"]
+
         courses = recommendation["courses"]
 
         print(f"\n🔴 {skill}")
-        print(f"   Skill Gap: {gap} points")
+
+        print(
+            f"   Skill Gap: {gap} points"
+        )
+
+        if not courses:
+
+            print(
+                "   ⚠ No course available for this skill."
+            )
+
+            continue
 
         for course in courses:
 
-            print(f"\n   STEP {step}")
-            print(f"   📘 {course['name']}")
-            print(f"   Level: {course['level']}")
-            print(f"   Duration: {course['duration']}")
-            print(f"   Type: {course['type']}")
+            print(
+                f"\n   STEP {step}"
+            )
+
+            print(
+                f"   📘 {course['name']}"
+            )
+
+            print(
+                f"   Level: {course['level']}"
+            )
+
+            print(
+                f"   Duration: {course['duration']}"
+            )
+
+            print(
+                f"   Type: {course['type']}"
+            )
 
             step += 1
 
@@ -87,41 +130,57 @@ def show_learning_path(recommendations):
 
 
 # TESTING
+
 if __name__ == "__main__":
 
     skill_gaps = {
 
         "Python": {
+
             "required": 70,
             "current": 100,
             "gap": 0
+
         },
 
         "SQL": {
+
             "required": 75,
             "current": 100,
             "gap": 0
+
         },
 
         "DSA": {
+
             "required": 65,
             "current": 50,
             "gap": 15
+
         },
 
         "Backend": {
+
             "required": 75,
             "current": 100,
             "gap": 0
+
         },
 
         "System Design": {
+
             "required": 60,
             "current": 0,
             "gap": 60
+
         }
+
     }
 
-    recommendations = recommend_courses(skill_gaps)
+    recommendations = recommend_courses(
+        skill_gaps
+    )
 
-    show_learning_path(recommendations)
+    show_learning_path(
+        recommendations
+    )
