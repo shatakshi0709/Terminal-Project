@@ -1,23 +1,34 @@
 [
     {
-        "name": "h",
+        "name": "hi",
         "education": "ji",
         "experience": "me",
         "target_role": "Data Analyst",
-        "location": "pune"
-    },
-    {
-        "name": "hi",
-        "education": "nj",
-        "experience": "hy",
-        "target_role": "Data Analyst",
-        "location": "tgh",
+        "location": "pune",
         "skill_scores": {
             "Python": 0,
             "SQL": 50,
             "DSA": 0,
             "Backend": 0,
             "System Design": 50
+        }
+    },
+    {
+        "name": "hi",
+        "education": "ji",
+        "experience": "ferf",
+        "target_role": "Data Analyst",
+        "location": "fe",
+        "skill_scores": {
+            "Python": 0,
+            "SQL": 50,
+            "DSA": 0,
+            "Backend": 0,
+            "System Design": 50
+        },
+        "learning_progress": {
+            "Advanced Python Development": "In Progress",
+            "Python Programming Fundamentals": "In Progress"
         }
     }
 ]

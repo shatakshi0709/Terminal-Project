@@ -1,7 +1,8 @@
 from utils.storage import (
     save_candidate,
     load_candidates,
-    update_candidate_scores
+    update_candidate_scores,
+    update_learning_progress
 )
 
 from engine.diagnostic import (
@@ -28,7 +29,8 @@ from engine.recommender import (
 
 from engine.learning_path import (
     recommend_courses,
-    show_learning_path
+    show_learning_path,
+    update_course_status
 )
 
 
@@ -56,7 +58,8 @@ def display_menu():
     print("│  5. 🔍 Analyze Skill Gaps                       │")
     print("│  6. 📚 Get Personalized Learning Path           │")
     print("│  7. 🎯 Career Readiness                          │")
-    print("│  8. 🚪 Exit                                     │")
+    print("│  8. 📈 Track Learning Progress                  │")
+    print("│  9. 🚪 Exit                                     │")
     print("│                                                  │")
     print("└──────────────────────────────────────────────────┘")
 
@@ -83,22 +86,23 @@ def create_profile():
 
     experience = input("💼 Experience: ").strip()
 
-    # ----------------------------------------
-    # JOB ROLE SELECTION
-    # ----------------------------------------
-
     jobs = load_jobs()
 
     print("\n🎯 AVAILABLE JOB ROLES")
     print("-" * 50)
 
     for index, job in enumerate(jobs, start=1):
-        print(f"  {index}. {job['title']}")
+
+        print(
+            f"  {index}. {job['title']}"
+        )
 
     while True:
 
         choice = input(
-            "\nSelect your target role (1-{}): ".format(len(jobs))
+            "\nSelect your target role (1-{}): ".format(
+                len(jobs)
+            )
         ).strip()
 
         if choice.isdigit():
@@ -107,35 +111,65 @@ def create_profile():
 
             if 1 <= role_index <= len(jobs):
 
-                target_role = jobs[role_index - 1]["title"]
+                target_role = jobs[
+                    role_index - 1
+                ]["title"]
 
                 break
 
-        print("⚠ Invalid selection. Please choose a valid number.")
+        print(
+            "⚠ Invalid selection. "
+            "Please choose a valid number."
+        )
 
-    location = input("📍 Preferred Location: ").strip()
+    location = input(
+        "📍 Preferred Location: "
+    ).strip()
 
     profile = {
+
         "name": name,
+
         "education": education,
+
         "experience": experience,
+
         "target_role": target_role,
+
         "location": location
+
     }
 
-    # Save profile
     save_candidate(profile)
 
     print("\n")
     print("╔" + "═" * 58 + "╗")
-    print("║" + "✓ PROFILE CREATED SUCCESSFULLY".center(58) + "║")
+    print(
+        "║" +
+        "✓ PROFILE CREATED SUCCESSFULLY".center(58) +
+        "║"
+    )
     print("╚" + "═" * 58 + "╝")
 
-    print(f"\n  👤 Candidate : {name}")
-    print(f"  🎓 Education : {education}")
-    print(f"  💼 Experience: {experience}")
-    print(f"  🎯 Target Role: {target_role}")
-    print(f"  📍 Location  : {location}")
+    print(
+        f"\n  👤 Candidate : {name}"
+    )
+
+    print(
+        f"  🎓 Education : {education}"
+    )
+
+    print(
+        f"  💼 Experience: {experience}"
+    )
+
+    print(
+        f"  🎯 Target Role: {target_role}"
+    )
+
+    print(
+        f"  📍 Location  : {location}"
+    )
 
     return profile
 
@@ -148,22 +182,32 @@ def show_my_skills(skill_scores):
 
     print("\n")
     print("╔" + "═" * 58 + "╗")
-    print("║" + "MY SKILL SCORES".center(58) + "║")
+    print(
+        "║" +
+        "MY SKILL SCORES".center(58) +
+        "║"
+    )
     print("╚" + "═" * 58 + "╝")
 
     for skill, score in skill_scores.items():
 
         filled = score // 10
+
         empty = 10 - filled
 
-        bar = "█" * filled + "░" * empty
+        bar = (
+            "█" * filled +
+            "░" * empty
+        )
 
         print(
-            f"\n  {skill:<18} "
+            f"\n  {skill:<18}"
             f"{bar} {score}%"
         )
 
-    print("\n" + "─" * 60)
+    print(
+        "\n" + "─" * 60
+    )
 
 
 # ============================================================
@@ -174,14 +218,22 @@ def display_job_summary(recommendations):
 
     print("\n")
     print("╔" + "═" * 58 + "╗")
-    print("║" + "TOP JOB RECOMMENDATIONS".center(58) + "║")
+    print(
+        "║" +
+        "TOP JOB RECOMMENDATIONS".center(58) +
+        "║"
+    )
     print("╚" + "═" * 58 + "╝")
 
     if not recommendations:
 
-        print("\n  No suitable jobs found.")
+        print(
+            "\n  No suitable jobs found."
+        )
 
-        print("\n" + "─" * 60)
+        print(
+            "\n" + "─" * 60
+        )
 
         return
 
@@ -195,18 +247,234 @@ def display_job_summary(recommendations):
         )
 
         print(
-            f"     Match      : {job['score']}%"
+            f"     Match      : "
+            f"{job['score']}%"
         )
 
         print(
-            f"     Salary     : {job['salary']}"
+            f"     Salary     : "
+            f"{job['salary']}"
         )
 
         print(
-            f"     Experience : {job['experience']}"
+            f"     Experience : "
+            f"{job['experience']}"
         )
+
+    print(
+        "\n" + "─" * 60
+    )
+
+
+# ============================================================
+# LEARNING PROGRESS
+# ============================================================
+
+def track_learning_progress(
+    profile,
+    skill_scores
+):
+
+    if not skill_scores:
+
+        print(
+            "\n⚠ Please take the competency "
+            "diagnostic first."
+        )
+
+        return None
+
+    target_job = get_job_by_title(
+        profile["target_role"]
+    )
+
+    if not target_job:
+
+        print(
+            "\n⚠ Target job role not found."
+        )
+
+        return None
+
+    gaps = calculate_skill_gaps(
+        skill_scores,
+        target_job["requirements"]
+    )
+
+    recommendations = recommend_courses(
+        gaps
+    )
+
+    learning_progress = profile.get(
+        "learning_progress",
+        {}
+    )
+
+    if not recommendations:
+
+        print(
+            "\n🎉 No learning gaps found."
+        )
+
+        return learning_progress
+
+    # Show current progress
+    print("\n")
+    print("╔" + "═" * 58 + "╗")
+    print(
+        "║" +
+        "LEARNING PROGRESS TRACKER".center(58) +
+        "║"
+    )
+    print("╚" + "═" * 58 + "╝")
+
+    course_list = []
+
+    number = 1
+
+    for recommendation in recommendations:
+
+        for course in recommendation["courses"]:
+
+            course_list.append(
+                course["name"]
+            )
+
+            status = learning_progress.get(
+                course["name"],
+                "Not Started"
+            )
+
+            print(
+                f"\n  {number}. 📘 "
+                f"{course['name']}"
+            )
+
+            print(
+                f"     Skill: "
+                f"{course['skill']}"
+            )
+
+            print(
+                f"     Status: "
+                f"{status}"
+            )
+
+            number += 1
+
+    if not course_list:
+
+        print(
+            "\n⚠ No courses available "
+            "for your current skill gaps."
+        )
+
+        return learning_progress
 
     print("\n" + "─" * 60)
+
+    while True:
+
+        choice = input(
+            "\nSelect course number "
+            "(0 to go back): "
+        ).strip()
+
+        if choice == "0":
+
+            break
+
+        if not choice.isdigit():
+
+            print(
+                "⚠ Please enter a valid number."
+            )
+
+            continue
+
+        course_index = int(choice)
+
+        if not (
+            1 <= course_index <= len(course_list)
+        ):
+
+            print(
+                "⚠ Invalid course number."
+            )
+
+            continue
+
+        course_name = course_list[
+            course_index - 1
+        ]
+
+        print(
+            "\nSelect status:"
+        )
+
+        print(
+            "  1. 🟡 Not Started"
+        )
+
+        print(
+            "  2. 🔵 In Progress"
+        )
+
+        print(
+            "  3. 🟢 Completed"
+        )
+
+        status_choice = input(
+            "\nEnter status: "
+        ).strip()
+
+        status_map = {
+
+            "1": "Not Started",
+
+            "2": "In Progress",
+
+            "3": "Completed"
+
+        }
+
+        if status_choice not in status_map:
+
+            print(
+                "⚠ Invalid status."
+            )
+
+            continue
+
+        new_status = status_map[
+            status_choice
+        ]
+
+        learning_progress = update_course_status(
+            learning_progress,
+            course_name,
+            new_status
+        )
+
+        update_learning_progress(
+            profile["name"],
+            learning_progress
+        )
+
+        profile[
+            "learning_progress"
+        ] = learning_progress
+
+        print(
+            f"\n✓ {course_name}"
+        )
+
+        print(
+            f"  Status updated to: "
+            f"{new_status}"
+        )
+
+    return learning_progress
 
 
 # ============================================================
@@ -215,15 +483,12 @@ def display_job_summary(recommendations):
 
 def main():
 
-    # Load previously saved candidates
     candidates = load_candidates()
 
-    # Load latest candidate profile
     if candidates:
 
         profile = candidates[-1]
 
-        # Load previously saved skill scores
         skill_scores = profile.get(
             "skill_scores",
             {}
@@ -232,25 +497,19 @@ def main():
     else:
 
         profile = None
-        skill_scores = {}
 
-    # ========================================================
-    # MAIN LOOP
-    # ========================================================
+        skill_scores = {}
 
     while True:
 
         display_header()
 
-        # ----------------------------------------
-        # SHOW CURRENT CANDIDATE
-        # ----------------------------------------
-
         if profile:
 
             print(
                 f"\n  👤 {profile['name']}"
-                f"   |   🎯 {profile['target_role']}"
+                f"   |   🎯 "
+                f"{profile['target_role']}"
             )
 
         display_menu()
@@ -267,7 +526,6 @@ def main():
 
             profile = create_profile()
 
-            # New profile has no diagnostic scores yet
             skill_scores = {}
 
             pause()
@@ -281,7 +539,8 @@ def main():
             if not profile:
 
                 print(
-                    "\n⚠ Please create your candidate profile first."
+                    "\n⚠ Please create your "
+                    "candidate profile first."
                 )
 
                 pause()
@@ -298,14 +557,14 @@ def main():
                 scores
             )
 
-            # Save scores to candidates.json
             update_candidate_scores(
                 profile["name"],
                 skill_scores
             )
 
-            # Update current profile in memory
-            profile["skill_scores"] = skill_scores
+            profile[
+                "skill_scores"
+            ] = skill_scores
 
             show_results(
                 skill_scores
@@ -322,7 +581,8 @@ def main():
             if not skill_scores:
 
                 print(
-                    "\n⚠ Please take the competency diagnostic first."
+                    "\n⚠ Please take the competency "
+                    "diagnostic first."
                 )
 
                 pause()
@@ -344,7 +604,8 @@ def main():
             if not skill_scores:
 
                 print(
-                    "\n⚠ Please take the competency diagnostic first."
+                    "\n⚠ Please take the competency "
+                    "diagnostic first."
                 )
 
                 pause()
@@ -370,7 +631,8 @@ def main():
             if not profile:
 
                 print(
-                    "\n⚠ Please create your candidate profile first."
+                    "\n⚠ Please create your "
+                    "candidate profile first."
                 )
 
                 pause()
@@ -380,7 +642,8 @@ def main():
             if not skill_scores:
 
                 print(
-                    "\n⚠ Please take the competency diagnostic first."
+                    "\n⚠ Please take the competency "
+                    "diagnostic first."
                 )
 
                 pause()
@@ -426,7 +689,8 @@ def main():
             if not profile:
 
                 print(
-                    "\n⚠ Please create your candidate profile first."
+                    "\n⚠ Please create your "
+                    "candidate profile first."
                 )
 
                 pause()
@@ -436,7 +700,8 @@ def main():
             if not skill_scores:
 
                 print(
-                    "\n⚠ Please take the competency diagnostic first."
+                    "\n⚠ Please take the competency "
+                    "diagnostic first."
                 )
 
                 pause()
@@ -466,13 +731,19 @@ def main():
                 gaps
             )
 
+            learning_progress = profile.get(
+                "learning_progress",
+                {}
+            )
+
             print(
                 f"\n🎯 Target Role: "
                 f"{target_job['title']}"
             )
 
             show_learning_path(
-                recommendations
+                recommendations,
+                learning_progress
             )
 
             pause()
@@ -486,7 +757,8 @@ def main():
             if not profile:
 
                 print(
-                    "\n⚠ Please create your candidate profile first."
+                    "\n⚠ Please create your "
+                    "candidate profile first."
                 )
 
                 pause()
@@ -496,7 +768,8 @@ def main():
             if not skill_scores:
 
                 print(
-                    "\n⚠ Please take the competency diagnostic first."
+                    "\n⚠ Please take the competency "
+                    "diagnostic first."
                 )
 
                 pause()
@@ -524,12 +797,17 @@ def main():
 
             print("\n")
             print("╔" + "═" * 58 + "╗")
-            print("║" + "CAREER READINESS".center(58) + "║")
+            print(
+                "║" +
+                "CAREER READINESS".center(58) +
+                "║"
+            )
             print("╚" + "═" * 58 + "╝")
 
             print(
                 f"\n  🎯 Target Role"
-                f"        : {target_job['title']}"
+                f"        : "
+                f"{target_job['title']}"
             )
 
             print(
@@ -539,53 +817,98 @@ def main():
 
             print(
                 f"  🚦 Status"
-                f"              : {get_readiness_level(score)}"
+                f"              : "
+                f"{get_readiness_level(score)}"
             )
 
-            print("\n" + "─" * 60)
+            print(
+                "\n" + "─" * 60
+            )
 
             if score >= 80:
 
                 print(
-                    "  🎉 You are ready to apply for this role!"
+                    "  🎉 You are ready "
+                    "to apply for this role!"
                 )
 
             elif score >= 65:
 
                 print(
-                    "  💪 You are close! Focus on your skill gaps."
+                    "  💪 You are close! "
+                    "Focus on your skill gaps."
                 )
 
             elif score >= 50:
 
                 print(
-                    "  📚 Keep learning and improving your skills."
+                    "  📚 Keep learning "
+                    "and improving your skills."
                 )
 
             else:
 
                 print(
-                    "  🚀 Upskilling is recommended before applying."
+                    "  🚀 Upskilling is recommended "
+                    "before applying."
                 )
 
-            print("\n" + "═" * 60)
+            print(
+                "\n" + "═" * 60
+            )
 
             pause()
 
         # ====================================================
-        # 8. EXIT
+        # 8. LEARNING PROGRESS
         # ====================================================
 
         elif choice == "8":
 
+            if not profile:
+
+                print(
+                    "\n⚠ Please create your "
+                    "candidate profile first."
+                )
+
+                pause()
+
+                continue
+
+            track_learning_progress(
+                profile,
+                skill_scores
+            )
+
+            pause()
+
+        # ====================================================
+        # 9. EXIT
+        # ====================================================
+
+        elif choice == "9":
+
             print("\n")
             print("╔" + "═" * 58 + "╗")
-            print("║" + "THANK YOU FOR USING".center(58) + "║")
-            print("║" + "SMART CAREER ENGINE 🚀".center(58) + "║")
+            print(
+                "║" +
+                "THANK YOU FOR USING".center(58) +
+                "║"
+            )
+
+            print(
+                "║" +
+                "SMART CAREER ENGINE 🚀".center(58) +
+                "║"
+            )
+
             print("╚" + "═" * 58 + "╝")
 
             print(
-                "\n  Keep learning. Keep growing. Keep building! 💙\n"
+                "\n  Keep learning. "
+                "Keep growing. "
+                "Keep building! 💙\n"
             )
 
             break
@@ -597,7 +920,8 @@ def main():
         else:
 
             print(
-                "\n⚠ Invalid choice. Please select 1-8."
+                "\n⚠ Invalid choice. "
+                "Please select 1-9."
             )
 
             pause()
