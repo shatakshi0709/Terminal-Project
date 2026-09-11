@@ -1,4 +1,9 @@
-from utils.storage import save_candidate, load_candidates
+from utils.storage import (
+    save_candidate,
+    load_candidates,
+    update_candidate_scores
+)
+
 from engine.diagnostic import (
     start_diagnostic,
     calculate_skill_scores,
@@ -17,7 +22,6 @@ from engine.skill_gap import (
 
 from engine.recommender import (
     recommend_jobs,
-    show_recommendations,
     get_job_by_title,
     load_jobs
 )
@@ -68,7 +72,6 @@ def pause():
 
 def create_profile():
 
-
     print("\n")
     print("╔" + "═" * 58 + "╗")
     print("║" + "CREATE CANDIDATE PROFILE".center(58) + "║")
@@ -90,10 +93,7 @@ def create_profile():
     print("-" * 50)
 
     for index, job in enumerate(jobs, start=1):
-
-        print(
-            f"  {index}. {job['title']}"
-        )
+        print(f"  {index}. {job['title']}")
 
     while True:
 
@@ -107,27 +107,23 @@ def create_profile():
 
             if 1 <= role_index <= len(jobs):
 
-                target_role = jobs[
-                    role_index - 1
-                ]["title"]
+                target_role = jobs[role_index - 1]["title"]
 
                 break
 
-        print(
-            "⚠ Invalid selection. Please choose a valid number."
-        )
+        print("⚠ Invalid selection. Please choose a valid number.")
 
-    location = input(
-        "📍 Preferred Location: "
-    ).strip()
+    location = input("📍 Preferred Location: ").strip()
 
     profile = {
-    "name": name,
-    "education": education,
-    "experience": experience,
-    "target_role": target_role,
-    "location": location
-}
+        "name": name,
+        "education": education,
+        "experience": experience,
+        "target_role": target_role,
+        "location": location
+    }
+
+    # Save profile
     save_candidate(profile)
 
     print("\n")
@@ -157,7 +153,6 @@ def show_my_skills(skill_scores):
 
     for skill, score in skill_scores.items():
 
-        # Create simple progress bar
         filled = score // 10
         empty = 10 - filled
 
@@ -181,6 +176,14 @@ def display_job_summary(recommendations):
     print("╔" + "═" * 58 + "╗")
     print("║" + "TOP JOB RECOMMENDATIONS".center(58) + "║")
     print("╚" + "═" * 58 + "╝")
+
+    if not recommendations:
+
+        print("\n  No suitable jobs found.")
+
+        print("\n" + "─" * 60)
+
+        return
 
     for index, job in enumerate(
         recommendations,
@@ -210,17 +213,30 @@ def display_job_summary(recommendations):
 # MAIN PROGRAM
 # ============================================================
 
-
 def main():
 
+    # Load previously saved candidates
     candidates = load_candidates()
 
+    # Load latest candidate profile
     if candidates:
-        profile = candidates[-1]
-    else:
-        profile = None
 
-    skill_scores = {}
+        profile = candidates[-1]
+
+        # Load previously saved skill scores
+        skill_scores = profile.get(
+            "skill_scores",
+            {}
+        )
+
+    else:
+
+        profile = None
+        skill_scores = {}
+
+    # ========================================================
+    # MAIN LOOP
+    # ========================================================
 
     while True:
 
@@ -251,6 +267,9 @@ def main():
 
             profile = create_profile()
 
+            # New profile has no diagnostic scores yet
+            skill_scores = {}
+
             pause()
 
         # ====================================================
@@ -278,6 +297,15 @@ def main():
             skill_scores = calculate_skill_scores(
                 scores
             )
+
+            # Save scores to candidates.json
+            update_candidate_scores(
+                profile["name"],
+                skill_scores
+            )
+
+            # Update current profile in memory
+            profile["skill_scores"] = skill_scores
 
             show_results(
                 skill_scores
@@ -379,7 +407,8 @@ def main():
             )
 
             print(
-                f"\n🎯 Target Role: {target_job['title']}"
+                f"\n🎯 Target Role: "
+                f"{target_job['title']}"
             )
 
             show_skill_gaps(
@@ -438,7 +467,8 @@ def main():
             )
 
             print(
-                f"\n🎯 Target Role: {target_job['title']}"
+                f"\n🎯 Target Role: "
+                f"{target_job['title']}"
             )
 
             show_learning_path(
@@ -572,6 +602,10 @@ def main():
 
             pause()
 
+
+# ============================================================
+# PROGRAM START
+# ============================================================
 
 if __name__ == "__main__":
 

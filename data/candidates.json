@@ -11,6 +11,13 @@
         "education": "nj",
         "experience": "hy",
         "target_role": "Data Analyst",
-        "location": "tgh"
+        "location": "tgh",
+        "skill_scores": {
+            "Python": 0,
+            "SQL": 50,
+            "DSA": 0,
+            "Backend": 0,
+            "System Design": 50
+        }
     }
 ]
