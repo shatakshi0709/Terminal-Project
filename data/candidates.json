@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "name": "h",
+        "education": "ji",
+        "experience": "me",
+        "target_role": "Data Analyst",
+        "location": "pune"
+    },
+    {
+        "name": "hi",
+        "education": "nj",
+        "experience": "hy",
+        "target_role": "Data Analyst",
+        "location": "tgh"
+    }
+]

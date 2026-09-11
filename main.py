@@ -1,3 +1,4 @@
+from utils.storage import save_candidate, load_candidates
 from engine.diagnostic import (
     start_diagnostic,
     calculate_skill_scores,
@@ -67,6 +68,7 @@ def pause():
 
 def create_profile():
 
+
     print("\n")
     print("╔" + "═" * 58 + "╗")
     print("║" + "CREATE CANDIDATE PROFILE".center(58) + "║")
@@ -120,18 +122,13 @@ def create_profile():
     ).strip()
 
     profile = {
-
-        "name": name,
-
-        "education": education,
-
-        "experience": experience,
-
-        "target_role": target_role,
-
-        "location": location
-
-    }
+    "name": name,
+    "education": education,
+    "experience": experience,
+    "target_role": target_role,
+    "location": location
+}
+    save_candidate(profile)
 
     print("\n")
     print("╔" + "═" * 58 + "╗")
@@ -213,9 +210,15 @@ def display_job_summary(recommendations):
 # MAIN PROGRAM
 # ============================================================
 
+
 def main():
 
-    profile = None
+    candidates = load_candidates()
+
+    if candidates:
+        profile = candidates[-1]
+    else:
+        profile = None
 
     skill_scores = {}
 
