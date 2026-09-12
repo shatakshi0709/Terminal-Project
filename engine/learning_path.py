@@ -138,3 +138,18 @@ def update_course_status(
     learning_progress[course_name] = status
 
     return learning_progress
+
+
+
+def get_next_course(recommendations, learning_progress):
+    for recommendation in recommendations:
+        courses = recommendation["courses"]
+
+        for course in courses:
+            course_name = course["name"]
+            status = learning_progress.get(course_name, "Not Started")
+
+            if status == "Not Started":
+                return course
+
+    return None

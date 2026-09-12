@@ -30,7 +30,8 @@ from engine.recommender import (
 from engine.learning_path import (
     recommend_courses,
     show_learning_path,
-    update_course_status
+    update_course_status,
+    get_next_course
 )
 
 
@@ -39,7 +40,6 @@ from engine.learning_path import (
 # ============================================================
 
 def display_header():
-
     print("\n")
     print("╔" + "═" * 58 + "╗")
     print("║" + "SMART CAREER ENGINE".center(58) + "║")
@@ -48,7 +48,6 @@ def display_header():
 
 
 def display_menu():
-
     print("\n┌──────────────────── MAIN MENU ────────────────────┐")
     print("│                                                  │")
     print("│  1. 👤 Create Candidate Profile                 │")
@@ -59,13 +58,13 @@ def display_menu():
     print("│  6. 📚 Get Personalized Learning Path           │")
     print("│  7. 🎯 Career Readiness                          │")
     print("│  8. 📈 Track Learning Progress                  │")
-    print("│  9. 🚪 Exit                                     │")
+    print("│  9. 🧠 Adaptive Learning                        │")
+    print("│ 10. 🚪 Exit                                     │")
     print("│                                                  │")
     print("└──────────────────────────────────────────────────┘")
 
 
 def pause():
-
     input("\nPress Enter to continue...")
 
 
@@ -92,7 +91,6 @@ def create_profile():
     print("-" * 50)
 
     for index, job in enumerate(jobs, start=1):
-
         print(
             f"  {index}. {job['title']}"
         )
@@ -319,6 +317,7 @@ def track_learning_progress(
         return learning_progress
 
     # Show current progress
+
     print("\n")
     print("╔" + "═" * 58 + "╗")
     print(
@@ -381,7 +380,6 @@ def track_learning_progress(
         ).strip()
 
         if choice == "0":
-
             break
 
         if not choice.isdigit():
@@ -884,10 +882,135 @@ def main():
             pause()
 
         # ====================================================
-        # 9. EXIT
+        # 9. ADAPTIVE LEARNING
         # ====================================================
 
         elif choice == "9":
+
+            if not profile:
+
+                print(
+                    "\n⚠ Please create your "
+                    "candidate profile first."
+                )
+
+                pause()
+
+                continue
+
+            if not skill_scores:
+
+                print(
+                    "\n⚠ Please take the competency "
+                    "diagnostic first."
+                )
+
+                pause()
+
+                continue
+
+            target_job = get_job_by_title(
+                profile["target_role"]
+            )
+
+            if not target_job:
+
+                print(
+                    "\n⚠ Target job role not found."
+                )
+
+                pause()
+
+                continue
+
+            gaps = calculate_skill_gaps(
+                skill_scores,
+                target_job["requirements"]
+            )
+
+            recommendations = recommend_courses(
+                gaps
+            )
+
+            learning_progress = profile.get(
+                "learning_progress",
+                {}
+            )
+
+            next_course = get_next_course(
+                recommendations,
+                learning_progress
+            )
+
+            print("\n")
+            print("╔" + "═" * 58 + "╗")
+            print(
+                "║" +
+                "ADAPTIVE LEARNING".center(58) +
+                "║"
+            )
+            print("╚" + "═" * 58 + "╝")
+
+            if next_course:
+
+                print(
+                    "\n  🎯 NEXT RECOMMENDED STEP"
+                )
+
+                print(
+                    f"\n  📘 Course : "
+                    f"{next_course['name']}"
+                )
+
+                print(
+                    f"  🧠 Skill  : "
+                    f"{next_course['skill']}"
+                )
+
+                print(
+                    f"  📊 Level  : "
+                    f"{next_course['level']}"
+                )
+
+                print(
+                    f"  ⏱ Duration: "
+                    f"{next_course['duration']}"
+                )
+
+                print(
+                    f"  🛠 Type   : "
+                    f"{next_course['type']}"
+                )
+
+                print(
+                    "\n  💡 This course is selected "
+                    "based on your current skill gaps "
+                    "and learning progress."
+                )
+
+            else:
+
+                print(
+                    "\n  🎉 All recommended courses "
+                    "are completed!"
+                )
+
+                print(
+                    "  You can now retake the diagnostic "
+                    "to measure your improvement."
+                )
+
+            print(
+                "\n" + "═" * 60
+            )
+
+            pause()
+
+        # ====================================================
+        # 10. EXIT
+        # ====================================================
+
+        elif choice == "10":
 
             print("\n")
             print("╔" + "═" * 58 + "╗")
@@ -921,7 +1044,7 @@ def main():
 
             print(
                 "\n⚠ Invalid choice. "
-                "Please select 1-9."
+                "Please select 1-10."
             )
 
             pause()
