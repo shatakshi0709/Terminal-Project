@@ -28,10 +28,28 @@ from engine.recommender import (
 )
 
 from engine.learning_path import (
+    load_courses,
     recommend_courses,
     show_learning_path,
     update_course_status,
     get_next_course
+)
+
+from engine.adaptive import (
+    reassess_skill,
+    update_skill_after_reassessment
+)
+
+from engine.market_insights import (
+    show_market_insights
+)
+
+from engine.certification import (
+    show_skill_verification
+)
+
+from engine.dashboard import (
+    show_dashboard
 )
 
 
@@ -59,7 +77,11 @@ def display_menu():
     print("│  7. 🎯 Career Readiness                          │")
     print("│  8. 📈 Track Learning Progress                  │")
     print("│  9. 🧠 Adaptive Learning                        │")
-    print("│ 10. 🚪 Exit                                     │")
+    print("│ 10. 🔄 Re-assess Completed Skill                │")
+    print("│ 11. 📊 Job Market Insights                      │")
+    print("│ 12. 🏆 Skill Verification                       │")
+    print("│ 13. 📋 Career Dashboard                          │")
+    print("│ 14. 🚪 Exit                                     │")
     print("│                                                  │")
     print("└──────────────────────────────────────────────────┘")
 
@@ -91,9 +113,7 @@ def create_profile():
     print("-" * 50)
 
     for index, job in enumerate(jobs, start=1):
-        print(
-            f"  {index}. {job['title']}"
-        )
+        print(f"  {index}. {job['title']}")
 
     while True:
 
@@ -125,17 +145,11 @@ def create_profile():
     ).strip()
 
     profile = {
-
         "name": name,
-
         "education": education,
-
         "experience": experience,
-
         "target_role": target_role,
-
         "location": location
-
     }
 
     save_candidate(profile)
@@ -149,25 +163,11 @@ def create_profile():
     )
     print("╚" + "═" * 58 + "╝")
 
-    print(
-        f"\n  👤 Candidate : {name}"
-    )
-
-    print(
-        f"  🎓 Education : {education}"
-    )
-
-    print(
-        f"  💼 Experience: {experience}"
-    )
-
-    print(
-        f"  🎯 Target Role: {target_role}"
-    )
-
-    print(
-        f"  📍 Location  : {location}"
-    )
+    print(f"\n  👤 Candidate : {name}")
+    print(f"  🎓 Education : {education}")
+    print(f"  💼 Experience: {experience}")
+    print(f"  🎯 Target Role: {target_role}")
+    print(f"  📍 Location  : {location}")
 
     return profile
 
@@ -190,7 +190,6 @@ def show_my_skills(skill_scores):
     for skill, score in skill_scores.items():
 
         filled = score // 10
-
         empty = 10 - filled
 
         bar = (
@@ -203,9 +202,7 @@ def show_my_skills(skill_scores):
             f"{bar} {score}%"
         )
 
-    print(
-        "\n" + "─" * 60
-    )
+    print("\n" + "─" * 60)
 
 
 # ============================================================
@@ -225,13 +222,9 @@ def display_job_summary(recommendations):
 
     if not recommendations:
 
-        print(
-            "\n  No suitable jobs found."
-        )
+        print("\n  No suitable jobs found.")
 
-        print(
-            "\n" + "─" * 60
-        )
+        print("\n" + "─" * 60)
 
         return
 
@@ -240,9 +233,7 @@ def display_job_summary(recommendations):
         start=1
     ):
 
-        print(
-            f"\n  {index}. {job['title']}"
-        )
+        print(f"\n  {index}. {job['title']}")
 
         print(
             f"     Match      : "
@@ -259,9 +250,7 @@ def display_job_summary(recommendations):
             f"{job['experience']}"
         )
 
-    print(
-        "\n" + "─" * 60
-    )
+    print("\n" + "─" * 60)
 
 
 # ============================================================
@@ -315,8 +304,6 @@ def track_learning_progress(
         )
 
         return learning_progress
-
-    # Show current progress
 
     print("\n")
     print("╔" + "═" * 58 + "╗")
@@ -406,34 +393,20 @@ def track_learning_progress(
             course_index - 1
         ]
 
-        print(
-            "\nSelect status:"
-        )
+        print("\nSelect status:")
 
-        print(
-            "  1. 🟡 Not Started"
-        )
-
-        print(
-            "  2. 🔵 In Progress"
-        )
-
-        print(
-            "  3. 🟢 Completed"
-        )
+        print("  1. 🟡 Not Started")
+        print("  2. 🔵 In Progress")
+        print("  3. 🟢 Completed")
 
         status_choice = input(
             "\nEnter status: "
         ).strip()
 
         status_map = {
-
             "1": "Not Started",
-
             "2": "In Progress",
-
             "3": "Completed"
-
         }
 
         if status_choice not in status_map:
@@ -473,6 +446,188 @@ def track_learning_progress(
         )
 
     return learning_progress
+
+
+# ============================================================
+# RE-ASSESS COMPLETED SKILL
+# ============================================================
+
+def reassess_completed_skill(
+    profile,
+    skill_scores
+):
+
+    if not profile:
+
+        print(
+            "\n⚠ Please create your "
+            "candidate profile first."
+        )
+
+        return skill_scores
+
+    if not skill_scores:
+
+        print(
+            "\n⚠ Please take the competency "
+            "diagnostic first."
+        )
+
+        return skill_scores
+
+    learning_progress = profile.get(
+        "learning_progress",
+        {}
+    )
+
+    completed_courses = [
+        course_name
+        for course_name, status
+        in learning_progress.items()
+        if status == "Completed"
+    ]
+
+    if not completed_courses:
+
+        print(
+            "\n📚 No completed courses found."
+        )
+
+        print(
+            "Complete a recommended course "
+            "before reassessing your skill."
+        )
+
+        return skill_scores
+
+    courses = load_courses()
+
+    course_skill_map = {
+        course["name"]: course["skill"]
+        for course in courses
+    }
+
+    valid_courses = [
+        course_name
+        for course_name in completed_courses
+        if course_name in course_skill_map
+    ]
+
+    if not valid_courses:
+
+        print(
+            "\n⚠ No valid completed courses found."
+        )
+
+        return skill_scores
+
+    print("\n")
+    print("╔" + "═" * 58 + "╗")
+    print(
+        "║" +
+        "RE-ASSESS COMPLETED SKILL".center(58) +
+        "║"
+    )
+    print("╚" + "═" * 58 + "╝")
+
+    print(
+        "\nSelect a completed course "
+        "to reassess its skill:\n"
+    )
+
+    for index, course_name in enumerate(
+        valid_courses,
+        start=1
+    ):
+
+        skill = course_skill_map[
+            course_name
+        ]
+
+        print(
+            f"  {index}. {course_name}"
+            f"  → {skill}"
+        )
+
+    print("  0. Go back")
+
+    while True:
+
+        choice = input(
+            "\nEnter choice: "
+        ).strip()
+
+        if choice == "0":
+            return skill_scores
+
+        if not choice.isdigit():
+
+            print(
+                "⚠ Please enter a valid number."
+            )
+
+            continue
+
+        index = int(choice)
+
+        if 1 <= index <= len(valid_courses):
+            break
+
+        print(
+            "⚠ Invalid selection."
+        )
+
+    selected_course = valid_courses[
+        index - 1
+    ]
+
+    skill = course_skill_map[
+        selected_course
+    ]
+
+    print(
+        f"\n📘 Completed Course: "
+        f"{selected_course}"
+    )
+
+    print(
+        f"🧠 Skill to reassess: "
+        f"{skill}"
+    )
+
+    old_score = skill_scores.get(
+        skill,
+        0
+    )
+
+    print(
+        f"📊 Previous Score: "
+        f"{old_score}%"
+    )
+
+    new_score = reassess_skill(
+        skill
+    )
+
+    if new_score is None:
+        return skill_scores
+
+    skill_scores = update_skill_after_reassessment(
+        skill_scores,
+        skill,
+        new_score
+    )
+
+    update_candidate_scores(
+        profile["name"],
+        skill_scores
+    )
+
+    profile["skill_scores"] = skill_scores
+
+    print("\n✓ Skill score updated successfully.")
+
+    return skill_scores
 
 
 # ============================================================
@@ -1007,32 +1162,73 @@ def main():
             pause()
 
         # ====================================================
-        # 10. EXIT
+        # 10. RE-ASSESS COMPLETED SKILL
         # ====================================================
 
         elif choice == "10":
+
+            skill_scores = reassess_completed_skill(
+                profile,
+                skill_scores
+            )
+
+            pause()
+
+        # ====================================================
+        # 11. JOB MARKET INSIGHTS
+        # ====================================================
+
+        elif choice == "11":
+
+            show_market_insights()
+
+            pause()
+
+        # ====================================================
+        # 12. SKILL VERIFICATION
+        # ====================================================
+
+        elif choice == "12":
+
+            show_skill_verification(
+                skill_scores
+            )
+
+            pause()
+
+        # ====================================================
+        # 13. CAREER DASHBOARD
+        # ====================================================
+
+        elif choice == "13":
+
+            show_dashboard(
+                profile,
+                skill_scores
+            )
+
+            pause()
+
+        # ====================================================
+        # 14. EXIT
+        # ====================================================
+
+        elif choice == "14":
 
             print("\n")
             print("╔" + "═" * 58 + "╗")
             print(
                 "║" +
-                "THANK YOU FOR USING".center(58) +
+                "THANK YOU FOR USING SMART CAREER ENGINE".center(58) +
                 "║"
             )
-
             print(
                 "║" +
-                "SMART CAREER ENGINE 🚀".center(58) +
+                "Build Skills • Find Opportunities • Grow".center(58) +
                 "║"
             )
-
             print("╚" + "═" * 58 + "╝")
-
-            print(
-                "\n  Keep learning. "
-                "Keep growing. "
-                "Keep building! 💙\n"
-            )
+            print()
 
             break
 
@@ -1044,7 +1240,7 @@ def main():
 
             print(
                 "\n⚠ Invalid choice. "
-                "Please select 1-10."
+                "Please select 1-14."
             )
 
             pause()
@@ -1055,5 +1251,4 @@ def main():
 # ============================================================
 
 if __name__ == "__main__":
-
     main()
